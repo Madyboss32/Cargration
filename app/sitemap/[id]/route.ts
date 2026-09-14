@@ -2,6 +2,7 @@ import { SITE } from '@/src/config/site'
 import { ensureLoaded, getAllCars } from '@/src/data/cars.server'
 import { allEntries, expandEntries, fileCount, SITEMAP_CHUNK } from '@/src/lib/sitemapPlan'
 
+export const runtime = 'edge'
 export const revalidate = 86400
 
 const base = SITE.url.replace(/\/$/, '')

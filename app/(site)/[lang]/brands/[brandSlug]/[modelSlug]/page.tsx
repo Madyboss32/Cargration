@@ -8,6 +8,8 @@ import { getDictionary, createT } from '@/src/i18n'
 import { locales } from '@/src/i18n/config'
 import InventoryList from '@/src/views/InventoryList'
 
+export const runtime = 'edge'
+
 interface Props {
   params: { lang: string; brandSlug: string; modelSlug: string }
 }

@@ -15,6 +15,7 @@ interface Props {
   params: { lang: string; slug: string }
 }
 
+export const runtime = 'edge'
 export const dynamicParams = true
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

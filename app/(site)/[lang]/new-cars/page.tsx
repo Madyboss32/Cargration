@@ -3,6 +3,8 @@ import { hreflangAlternates, baseOpenGraph } from '@/src/lib/seo'
 import InventoryList from '@/src/views/InventoryList'
 import { getDictionary, createT } from '@/src/i18n'
 
+export const runtime = 'edge'
+
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
   const t = createT(getDictionary(params.lang))
   return {
