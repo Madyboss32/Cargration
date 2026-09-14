@@ -1,0 +1,7 @@
+name = "cargration"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# Cloudflare Pages free tier: unlimited bandwidth, 500 builds/month
+# No custom build command needed — next-on-pages handles everything

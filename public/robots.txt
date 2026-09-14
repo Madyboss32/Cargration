@@ -1,0 +1,42 @@
+﻿# --------------------------------------------------# Global Signals & Metadata
+# --------------------------------------------------
+Content-Signal: search=yes, ai-train=no, use=reference
+Sitemap: https://www.cargration.com/sitemap.xml
+
+
+# --------------------------------------------------
+# Block highly aggressive/non-search AI scrapers
+# --------------------------------------------------
+User-agent: Bytespider
+Disallow: /
+
+
+User-agent: CCBot
+Disallow: /
+
+
+User-agent: meta-externalagent
+Disallow: /
+
+
+# --------------------------------------------------
+# Main rules for all search engines and legitimate bots
+# --------------------------------------------------
+User-agent: *
+# System blocks
+Disallow: /api/
+Disallow: /web/
+
+
+# Filter blocks (Multi-language compare pages)
+Disallow: /compare
+Disallow: /en/compare
+Disallow: /pt/compare
+Disallow: /ru/compare
+Disallow: /ar/compare
+Disallow: /fr/compare
+Disallow: /es/compare
+
+
+# Protect server resources (Note: Googlebot/Bingbot ignore crawl-delay)
+Crawl-delay: 2

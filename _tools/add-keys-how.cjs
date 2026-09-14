@@ -1,0 +1,110 @@
+const fs = require('fs'), path = require('path');
+const D = path.join(__dirname, '..', 'src', 'i18n', 'dictionaries');
+const K = {
+  'faq.cat.general': { en: 'General', ru: 'Общие', fr: 'Général', ar: 'عام', pt: 'Geral', es: 'General' },
+  'faq.cat.buying': { en: 'Buying Process', ru: 'Процесс покупки', fr: 'Processus d\'achat', ar: 'عملية الشراء', pt: 'Processo de compra', es: 'Proceso de compra' },
+  'faq.cat.inspection': { en: 'Inspection & Documents', ru: 'Осмотр и документы', fr: 'Inspection & documents', ar: 'الفحص والمستندات', pt: 'Inspeção & documentos', es: 'Inspección y documentos' },
+  'faq.cat.shipping': { en: 'Shipping & Delivery', ru: 'Доставка и отгрузка', fr: 'Expédition & livraison', ar: 'الشحن والتسليم', pt: 'Envio & entrega', es: 'Envío y entrega' },
+  'faq.cat.support': { en: 'Support', ru: 'Поддержка', fr: 'Support', ar: 'الدعم', pt: 'Suporte', es: 'Soporte' },
+
+  'how.eyebrow': { en: 'Process', ru: 'Процесс', fr: 'Processus', ar: 'العملية', pt: 'Processo', es: 'Proceso' },
+  'how.title': { en: 'How It Works', ru: 'Как это работает', fr: 'Comment ça marche', ar: 'كيف نعمل', pt: 'Como funciona', es: 'Cómo funciona' },
+  'how.sub': {
+    en: 'From selection to delivery — a transparent, documented process that protects buyers at every step.',
+    ru: 'От выбора до доставки — прозрачный документированный процесс, который защищает покупателя на каждом шаге.',
+    fr: 'De la sélection à la livraison — un processus transparent et documenté qui protège l\'acheteur à chaque étape.',
+    ar: 'من الاختيار حتى التسليم — عملية شفافة وموثقة تحمي المشتري في كل خطوة.',
+    pt: 'Da seleção à entrega — um processo transparente e documentado que protege o comprador em cada etapa.',
+    es: 'De la selección a la entrega — un proceso transparente y documentado que protege al comprador en cada paso.',
+  },
+  'how.s1t': { en: 'Browse & Select', ru: 'Выбор автомобиля', fr: 'Parcourir & choisir', ar: 'تصفح واختر', pt: 'Escolha & seleção', es: 'Explora y elige' },
+  'how.s1d': {
+    en: 'Explore our catalog of 20,800+ vehicles from 180 Chinese and international brands. Use filters for brand, body type, price range, and condition. Every listing displays the all-inclusive FOB price — vehicle cost, 7-point inspection, documentation, and port loading.',
+    ru: 'Изучите каталог из более чем 20 800 автомобилей 180 китайских и международных брендов. Фильтруйте по бренду, типу кузова, цене и состоянию. В каждом объявлении указана полная цена FOB — стоимость авто, 7-этапный осмотр, документы и погрузка в порту.',
+    fr: 'Explorez notre catalogue de plus de 20 800 véhicules de 180 marques chinoises et internationales. Filtrez par marque, carrosserie, budget et état. Chaque annonce affiche le prix FOB tout compris — véhicule, inspection en 7 points, documentation et chargement au port.',
+    ar: 'استكشف كتالوجنا الذي يضم أكثر من 20800 سيارة من 180 علامة صينية وعالمية. صفِّ حسب العلامة ونوع الهيكل وسعر الشراء والحالة. كل إعلان يعرض سعر FOB الشامل — تكلفة السيارة والفحص من 7 نقاط والمستندات والتحميل في الميناء.',
+    pt: 'Explore nosso catálogo com mais de 20.800 veículos de 180 marcas chinesas e internacionais. Use filtros por marca, carroceria, faixa de preço e condição. Cada anúncio mostra o preço FOB tudo incluso — veículo, inspeção em 7 pontos, documentação e carregamento no porto.',
+    es: 'Explora nuestro catálogo de más de 20.800 vehículos de 180 marcas chinas e internacionales. Filtra por marca, tipo de carrocería, precio y condición. Cada anuncio muestra el precio FOB todo incluido — vehículo, inspección de 7 puntos, documentación y carga en puerto.',
+  },
+  'how.s1l1': { en: 'Filter by brand, type, price, and port', ru: 'Фильтры по бренду, типу, цене и порту', fr: 'Filtres par marque, type, prix et port', ar: 'فلاتر حسب العلامة والنوع والسعر والميناء', pt: 'Filtros por marca, tipo, preço e porto', es: 'Filtra por marca, tipo, precio y puerto' },
+  'how.s1l2': { en: 'View detailed specs, photos, and inspection status', ru: 'Подробные характеристики, фото и статус осмотра', fr: 'Spécifications détaillées, photos et statut d\'inspection', ar: 'مواصفات وصور وحالة فحص تفصيلية', pt: 'Especificações detalhadas, fotos e status da inspeção', es: 'Especificaciones detalladas, fotos y estado de inspección' },
+  'how.s1l3': { en: 'All prices are FOB — no hidden fees', ru: 'Все цены FOB — без скрытых платежей', fr: 'Tous les prix sont FOB — sans frais cachés', ar: 'جميع الأسعار FOB — دون رسوم خفية', pt: 'Todos os preços são FOB — sem taxas ocultas', es: 'Todos los precios son FOB — sin cargos ocultos' },
+  'how.s1l4': { en: 'Request additional photos or video walkthroughs', ru: 'Запросите дополнительные фото или видеообзор', fr: 'Demandez des photos ou vidéos supplémentaires', ar: 'اطلب صورًا أو جولات فيديو إضافية', pt: 'Solicite fotos ou vídeos adicionais', es: 'Solicita fotos o recorridos en video adicionales' },
+  'how.s2t': { en: 'Inspection & Verification', ru: 'Осмотр и проверка', fr: 'Inspection & vérification', ar: 'الفحص والتحقق', pt: 'Inspeção & verificação', es: 'Inspección y verificación' },
+  'how.s2d': {
+    en: 'Every vehicle undergoes a documented 7-point inspection covering engine, transmission, brakes, suspension, electronics, body, and interior. You receive a full photo and video report before committing to purchase.',
+    ru: 'Каждый автомобиль проходит документированный 7-этапный осмотр: двигатель, трансмиссия, тормоза, подвеска, электроника, кузов и салон. Вы получаете полный фото- и видеоотчёт до подтверждения покупки.',
+    fr: 'Chaque véhicule subit une inspection documentée en 7 points : moteur, transmission, freins, suspension, électronique, carrosserie et intérieur. Vous recevez un rapport photo et vidéo complet avant l\'achat.',
+    ar: 'تخضع كل سيارة لفحص موثق من 7 نقاط يشمل المحرك وناقل الحركة والفرامل والتعليق والإلكترونيات والهيكل والمقصورة. تستلم تقرير صور وفيديو كاملاً قبل الالتزام بالشراء.',
+    pt: 'Todo veículo passa por inspeção documentada em 7 pontos cobrindo motor, transmissão, freios, suspensão, eletrônica, lataria e interior. Você recebe relatório completo com fotos e vídeo antes de fechar a compra.',
+    es: 'Cada vehículo pasa por una inspección documentada de 7 puntos que cubre motor, transmisión, frenos, suspensión, electrónica, carrocería e interior. Recibes un reporte completo con fotos y video antes de confirmar la compra.',
+  },
+  'how.s2l1': { en: 'Engine & drivetrain compression and performance', ru: 'Компрессия и производительность двигателя и трансмиссии', fr: 'Compression et performances moteur et transmission', ar: 'الضغط وأداء المحرك وناقل الحركة', pt: 'Compressão e desempenho do motor e câmbio', es: 'Compresión y desempeño del motor y transmisión' },
+  'how.s2l2': { en: 'Brake pad thickness and rotor condition', ru: 'Толщина тормозных колодок и состояние дисков', fr: 'Épaisseur des plaquettes et état des disques', ar: 'سماكة الفحمات وحالة الأقراص', pt: 'Espessura das pastilhas e estado dos discos', es: 'Grosor de pastillas y estado de discos' },
+  'how.s2l3': { en: 'Electrical system and battery load test', ru: 'Электросистема и тест батареи под нагрузкой', fr: 'Système électrique et test de charge batterie', ar: 'النظام الكهربائي واختبار تحميل البطارية', pt: 'Sistema elétrico e teste de carga da bateria', es: 'Sistema eléctrico y prueba de carga de batería' },
+  'how.s2l4': { en: 'Body panel alignment and paint thickness', ru: 'Геометрия кузова и толщина ЛКП', fr: 'Alignement des panneaux et épaisseur de peinture', ar: 'محاذاة ألواح الهيكل وسماكة الطلاء', pt: 'Alinhamento das painéis e espessura da pintura', es: 'Alineación de paneles y grosor de pintura' },
+  'how.s2l5': { en: 'Interior condition and odometer verification', ru: 'Состояние салона и проверка пробега', fr: 'État intérieur et vérification du compteur', ar: 'حالة المقصورة والتحقق من عداد المسافة', pt: 'Condição do interior e verificação do odômetro', es: 'Estado del interior y verificación del odómetro' },
+  'how.s2l6': { en: 'Undercarriage and frame integrity', ru: 'Днище и целостность рамы', fr: 'Dessous du véhicule et intégrité du châssis', ar: 'الهيكل السفلي وسلامة الشاسيه', pt: 'Parte inferior e integridade do chassi', es: 'Tren inferior e integridad del chasis' },
+  'how.s2l7': { en: '15-minute road test evaluation', ru: '15-минутный тест-драйв', fr: 'Essai routier de 15 minutes', ar: 'اختبار طريق لمدة 15 دقيقة', pt: 'Teste de estrada de 15 minutos', es: 'Prueba de ruta de 15 minutos' },
+  'how.s3t': { en: 'Purchase & Documentation', ru: 'Покупка и документы', fr: 'Achat & documentation', ar: 'الشراء والتوثيق', pt: 'Compra & documentação', es: 'Compra y documentación' },
+  'how.s3d': {
+    en: 'After inspection approval, we prepare the FOB contract, commercial invoice, export certificate, certificate of origin, and bill of lading. Payment is via wire transfer to our corporate account.',
+    ru: 'После согласования осмотра мы готовим FOB-контракт, инвойс, экспортное свидетельство, сертификат происхождения и коносамент. Оплата банковским переводом на корпоративный счёт.',
+    fr: 'Après validation de l\'inspection, nous préparons le contrat FOB, la facture commerciale, le certificat d\'exportation, le certificat d\'origine et le connaissement. Paiement par virement sur notre compte professionnel.',
+    ar: 'بعد اعتماد الفحص نجهز عقد FOB والفاتورة التجارية وشهادة التصدير وشهادة المنشأ وسند الشحن. الدفع بحوالة بنكية إلى حساب الشركة.',
+    pt: 'Após a aprovação da inspeção, preparamos o contrato FOB, fatura comercial, certificado de exportação, certificado de origem e conhecimento de embarque. Pagamento por transferência bancária para nossa conta corporativa.',
+    es: 'Tras aprobar la inspección, preparamos el contrato FOB, factura comercial, certificado de exportación, certificado de origen y conocimiento de embarque. El pago se realiza por transferencia a nuestra cuenta corporativa.',
+  },
+  'how.s3l1': { en: 'FOB contract with final pricing', ru: 'FOB-контракт с итоговой ценой', fr: 'Contrat FOB au prix final', ar: 'عقد FOB بالسعر النهائي', pt: 'Contrato FOB com preço final', es: 'Contrato FOB con precio final' },
+  'how.s3l2': { en: 'Commercial invoice and packing list', ru: 'Инвойс и упаковочный лист', fr: 'Facture commerciale et liste de colisage', ar: 'فاتورة تجارية وقائمة تعبئة', pt: 'Fatura comercial e packing list', es: 'Factura comercial y lista de empaque' },
+  'how.s3l3': { en: 'Export certificate and certificate of origin', ru: 'Экспортное свидетельство и сертификат происхождения', fr: 'Certificat d\'exportation et certificat d\'origine', ar: 'شهادة تصدير وشهادة منشأ', pt: 'Certificado de exportação e de origem', es: 'Certificado de exportación y de origen' },
+  'how.s3l4': { en: 'Bill of lading (ocean) or rail waybill', ru: 'Коносамент (море) или ж/д накладная', fr: 'Connaissement (maritime) ou lettre de voie ferroviaire', ar: 'سند شحن (بحري) أو بيان سكة حديد', pt: 'Conhecimento de embarque (marítimo) ou documento ferroviário', es: 'Conocimiento de embarque (marítimo) o carta de porte ferroviaria' },
+  'how.s3l5': { en: 'Destination-specific customs documents on request', ru: 'Таможенные документы под страну назначения по запросу', fr: 'Documents douaniers spécifiques à destination sur demande', ar: 'مستندات جمركية خاصة ببلدك عند الطلب', pt: 'Documentos alfandegários do país de destino sob consulta', es: 'Documentos aduaneros del país destino a solicitud' },
+  'how.s4t': { en: 'Shipping & Transit', ru: 'Доставка и транзит', fr: 'Expédition & transit', ar: 'الشحن والعبور', pt: 'Envio & trânsito', es: 'Envío y tránsito' },
+  'how.s4d': {
+    en: 'Your vehicle ships via ocean container, Ro-Ro vessel, or rail freight from one of 8 Chinese ports. Real-time tracking is provided throughout the voyage.',
+    ru: 'Автомобиль отправляется морским контейнером, Ro-Ro судном или по железной дороге из одного из 8 портов Китая. Отслеживание в реальном времени на протяжении всего пути.',
+    fr: 'Votre véhicule part en conteneur maritime, navire Ro-Ro ou fret ferroviaire depuis l\'un des 8 ports chinois. Suivi en temps réel pendant toute la traversée.',
+    ar: 'تُشحن سيارتك بحاوية بحرية أو سفينة Ro-Ro أو بالسكك الحديدية من أحد 8 موانئ صينية، مع تتبع مباشر طوال الرحلة.',
+    pt: 'Seu veículo segue em contêiner marítimo, navio Ro-Ro ou trem a partir de um dos 8 portos chineses, com rastreamento em tempo real durante toda a viagem.',
+    es: 'Tu vehículo se envía en contenedor marítimo, buque Ro-Ro o ferrocarril desde uno de los 8 puertos chinos, con seguimiento en tiempo real durante todo el viaje.',
+  },
+  'how.s4l1': { en: 'Ocean freight: 25–45 days to most destinations', ru: 'Морская доставка: 25–45 дней до большинства направлений', fr: 'Maritime : 25–45 jours vers la plupart des destinations', ar: 'بحري: 25–45 يومًا إلى معظم الوجهات', pt: 'Marítimo: 25–45 dias para a maioria dos destinos', es: 'Marítimo: 25–45 días a la mayoría de destinos' },
+  'how.s4l2': { en: 'Rail freight: 12–20 days to Central Asia and Russia', ru: 'Ж/д доставка: 12–20 дней в Центральную Азию и Россию', fr: 'Rail : 12–20 jours vers l\'Asie centrale et la Russie', ar: 'سكك حديدية: 12–20 يومًا إلى آسيا الوسطى وروسيا', pt: 'Ferroviário: 12–20 dias para Ásia Central e Rússia', es: 'Ferrocarril: 12–20 días a Asia Central y Rusia' },
+  'how.s4l3': { en: 'Real-time GPS tracking portal', ru: 'GPS-трекинг в реальном времени', fr: 'Suivi GPS en temps réel', ar: 'بوابة تتبع GPS مباشرة', pt: 'Portal de rastreamento GPS em tempo real', es: 'Portal de seguimiento GPS en tiempo real' },
+  'how.s4l4': { en: 'Digital document delivery via your account manager', ru: 'Цифровая передача документов через менеджера', fr: 'Remise numérique des documents via votre gestionnaire', ar: 'تسليم رقمي للمستندات عبر مدير حسابك', pt: 'Entrega digital de documentos via gerente de conta', es: 'Entrega digital de documentos vía tu ejecutivo' },
+  'how.s4l5': { en: 'Consolidation available for multiple vehicles', ru: 'Консолидация для нескольких автомобилей', fr: 'Groupage possible pour plusieurs véhicules', ar: 'تجميع متاح للسيارات المتعددة', pt: 'Consolidação disponível para vários veículos', es: 'Consolidación disponible para varios vehículos' },
+  'how.s5t': { en: 'Arrival & Clearance', ru: 'Прибытие и растаможка', fr: 'Arrivée & dédouanement', ar: 'الوصول والتخليص', pt: 'Chegada & desembaraço', es: 'Llegada y despacho' },
+  'how.s5d': {
+    en: 'The vehicle arrives at your destination port. Your clearing agent handles customs clearance using documentation we prepared in advance. Original documents released upon clearance confirmation.',
+    ru: 'Автомобиль прибывает в порт назначения. Ваш брокер проходит таможню по документам, которые мы подготовили заранее. Оригиналы документов выдаются после подтверждения выпуска.',
+    fr: 'Le véhicule arrive au port de destination. Votre commissionnaire en douane utilise les documents que nous avons préparés à l\'avance. Les documents originaux sont libérés après confirmation du dédouanement.',
+    ar: 'تصل السيارة إلى مينائك، ويتولى مخلّصك التخليص الجمركي بالمستندات التي جهزناها مسبقًا، وتُسلَّم المستندات الأصلية بعد تأكيد الإفراج.',
+    pt: 'O veículo chega ao seu porto de destino. Seu despachante faz a liberação aduaneira com a documentação que preparamos antecipadamente. Os originais são liberados após a confirmação do desembaraço.',
+    es: 'El vehículo llega a tu puerto de destino. Tu agente aduanero gestiona el despacho con la documentación que preparamos por adelantado. Los documentos originales se liberan tras la confirmación del despacho.',
+  },
+  'how.s5l1': { en: 'All export documents arrive before the vessel', ru: 'Все экспортные документы приходят раньше судна', fr: 'Tous les documents arrivent avant le navire', ar: 'كل مستندات التصدير تصل قبل السفينة', pt: 'Todos os documentos chegam antes do navio', es: 'Todos los documentos llegan antes del barco' },
+  'how.s5l2': { en: 'Coordinate with your local clearing agent', ru: 'Координация с местным брокером', fr: 'Coordination avec votre agent local', ar: 'تنسيق مع مخلّصك المحلي', pt: 'Coordenação com seu despachante local', es: 'Coordinación con tu agente local' },
+  'how.s5l3': { en: 'Original bill of lading via courier', ru: 'Оригинал коносамента курьером', fr: 'Connaissement original par coursier', ar: 'سند الشحن الأصلي عبر البريد السريع', pt: 'Conhecimento de embarque original por courier', es: 'Conocimiento de embarque original por mensajería' },
+  'how.s5l4': { en: 'Post-delivery support and follow-up', ru: 'Поддержка после поставки', fr: 'Support après livraison', ar: 'دعم ومتابعة بعد التسليم', pt: 'Suporte pós-entrega', es: 'Soporte posterior a la entrega' },
+  'how.faqEyebrow': { en: 'Buying Process FAQ', ru: 'Вопросы о покупке', fr: 'FAQ achat', ar: 'أسئلة الشراء', pt: 'FAQ de compra', es: 'FAQ de compra' },
+  'how.faqTitle': { en: 'Questions About Buying', ru: 'Вопросы о процессе покупки', fr: 'Questions sur l\'achat', ar: 'أسئلة عن الشراء', pt: 'Perguntas sobre a compra', es: 'Preguntas sobre la compra' },
+  'how.ctaTitle': { en: 'Ready to Start?', ru: 'Готовы начать?', fr: 'Prêt à commencer ?', ar: 'جاهز للبدء؟', pt: 'Pronto para começar?', es: '¿Listo para empezar?' },
+  'how.ctaSub': {
+    en: 'Browse our inventory or chat with an export advisor to get a personalized quote.',
+    ru: 'Смотрите каталог или свяжитесь с консультантом для персонального расчёта.',
+    fr: 'Parcourez notre inventaire ou discutez avec un conseiller pour un devis personnalisé.',
+    ar: 'تصفح المخزون أو تحدث مع مستشار تصدير للحصول على عرض مخصص.',
+    pt: 'Navegue pelo estoque ou converse com um consultor para receber uma cotação personalizada.',
+    es: 'Explora nuestro inventario o habla con un asesor para recibir una cotización personalizada.',
+  },
+};
+
+for (const f of ['en', 'ru', 'fr', 'ar', 'pt', 'es']) {
+  const p = path.join(D, f + '.json');
+  const d = JSON.parse(fs.readFileSync(p, 'utf8'));
+  let n = 0;
+  for (const [k, v] of Object.entries(K)) { if (d[k] === undefined) { d[k] = v[f]; n++; } }
+  fs.writeFileSync(p, JSON.stringify(d, null, 2) + '\n');
+  console.log(f, '+' + n);
+}

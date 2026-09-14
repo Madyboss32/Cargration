@@ -1,0 +1,30 @@
+{
+  "name": "Cargration — Chinese Vehicle Export",
+  "short_name": "Cargration",
+  "description": "Source, inspect, and ship Chinese vehicles to 42+ countries with FOB pricing.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0A3161",
+  "theme_color": "#0A3161",
+  "categories": ["business", "shopping"],
+  "icons": [
+    {
+      "src": "/assets/img/cargration-logo.webp",
+      "sizes": "any",
+      "type": "image/webp"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

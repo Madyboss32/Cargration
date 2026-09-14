@@ -1,0 +1,11 @@
+generated: 21354
+new from backup: 1581
+csv rows: 19778
+dropped (no price): 0
+brands: 329
+fx CNY/USD: 7.2
+price USD: 1389 - 1371500
+with images: 21354
+no series name: 6899
+byFuel: {"Petrol":14434,"Plug-in Hybrid":276,"Electric":6037,"Diesel":312,"REEV":26,"Hybrid":269}
+byType: {"suv":4696,"sedan":10096,"ev":5593,"mpv":526,"van":208,"hatchback":231,"pickup":3,"truck":1}

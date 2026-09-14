@@ -1,0 +1,5 @@
+const fs = require('fs')
+const src = fs.readFileSync('src/data/blog.ts', 'utf-8')
+const links = src.match(/href="\/(inventory|inspection|logistics|payment|how-it-works)"/g)
+console.log('Internal links found:', links ? links.length : 0)
+if (links) links.forEach(l => console.log(' ', l))

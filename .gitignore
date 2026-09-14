@@ -1,0 +1,41 @@
+# dependencies
+/node_modules
+
+# next.js build output
+/.next/
+/out/
+
+# production
+/build
+
+# logs
+*.log
+npm-debug.log*
+next-env.d.ts
+
+# local env files
+.env
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# cache dirs (data + image mirror)
+/.data/
+/public/car-img/
+
+# generated tooling output
+/_tools/mirror-failures.json
+/_tools/mirror-run.log
+/_tools/*.err.log
+/_tools/*.log
+/_tools/cars.generated.eauto-backup.json
+/_tools/r2-failures.json
+
+# temp upload state
+/src/data/r2-upload-progress.json
+
+# Cloudflare / Vercel build artifacts
+/.vercel
+/.wrangler
+/.cloudflare

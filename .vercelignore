@@ -1,0 +1,27 @@
+# Tracks/Vercel is not a git repo; use .vercelignore for upload control
+
+# build/dev artifacts
+.next
+node_modules
+out
+build
+tsconfig.tsbuildinfo
+
+# local env secrets (never upload)
+.env
+.env.local
+.env.production
+.env.production.local
+
+# tooling + logs
+_tools
+*.log
+npm-debug.log*
+
+# old-id source data — MUST NOT ship (superseded by crypto-random ids)
+src/data/cars.generated.backup-ids.json
+src/data/cars.generated.backup.json
+
+# local data mirrors
+.data
+public/car-img
