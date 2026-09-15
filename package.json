@@ -28,10 +28,12 @@
     "@tailwindcss/postcss": "^4.1.6",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.29",
+    "iconv-lite": "^0.7.3",
     "postcss": "^8.5.3",
     "sharp": "^0.35.3",
     "tailwindcss": "^4.1.6",
     "typescript": "^5.5.4",
-    "vercel": "34.4.0"
+    "vercel": "34.4.0",
+    "yauzl": "^3.4.0"
   }
 }
