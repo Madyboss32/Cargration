@@ -20,7 +20,7 @@ export const dynamicParams = true
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   await ensureLoaded()
-  const car = resolveCarBySlug(params.slug)
+  const car = await resolveCarBySlug(params.slug)
   if (!car) notFound()
   const title = carExportTitle(car)
   return {
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   await ensureLoaded()
   const t = createT(getDictionary(params.lang))
-  const car = resolveCarBySlug(params.slug)
+  const car = await resolveCarBySlug(params.slug)
 
   if (!car) notFound()
 

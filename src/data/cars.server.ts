@@ -219,6 +219,17 @@ export function ensureLoaded(): Promise<CatalogItem[]> {
   if (cache) return Promise.resolve(cache)
   if (!loadPromise) {
     loadPromise = (async () => {
+      if (IS_EDGE) {
+        // Edge runtime: the catalog is served from R2 as a precomputed, already
+        // processed "lite" projection (see _tools/prepare-edge-catalog.cjs). We
+        // must NOT re-run buildCatalogFromSource here — holding the raw 22 MB
+        // catalog plus a processed copy in a 128 MB Worker exceeds its limits
+        // (Error 1102). The lite projection carries every field the edge pages,
+        // filters and sitemaps read, plus a precomputed slug/_i for detail lookups.
+        const res = await fetch(SITE.liteCatalogJsonUrl)
+        if (!res.ok) throw new Error(`lite catalog fetch failed: ${res.status}`)
+        return adoptBuilt((await res.json()) as CatalogItem[])
+      }
       // Always build from the bundled local file — never trust a possibly
       // stale Redis/R2 copy of the catalog (it would reintroduce stale brands).
       const source = await loadCatalogSource()
@@ -226,6 +237,33 @@ export function ensureLoaded(): Promise<CatalogItem[]> {
     })().finally(() => { loadPromise = null })
   }
   return loadPromise
+}
+
+const EDGE_CHUNK_CACHE = new Map<string, { at: number; cars: CatalogItem[] }>()
+const EDGE_CHUNK_TTL = 60 * 60 * 1000
+
+/**
+ * Fetches the full (image-inclusive) record chunk for the lite item at `index`.
+ * Only an individual chunk is ever pulled into memory per request, never the
+ * whole catalog, so detail pages stay far below Worker memory/CPU limits.
+ */
+async function fetchFullChunkByIndex(index: number): Promise<CatalogItem[]> {
+  const chunkNo = Math.max(0, Math.floor((index || 0) / SITE.fullCatalogChunkSize))
+  const key = String(chunkNo).padStart(5, '0')
+  const hit = EDGE_CHUNK_CACHE.get(key)
+  if (hit && Date.now() - hit.at < EDGE_CHUNK_TTL) return hit.cars
+  const res = await fetch(`${SITE.fullCatalogChunkPrefix.replace(/\/+$/, '/')}${key}.json`)
+  if (!res.ok) throw new Error(`full catalog chunk ${key} fetch failed: ${res.status}`)
+  const cars = (await res.json()) as CatalogItem[]
+  EDGE_CHUNK_CACHE.set(key, { at: Date.now(), cars })
+  if (EDGE_CHUNK_CACHE.size > 16) {
+    let oldestKey: string | null = null
+    for (const [k, v] of EDGE_CHUNK_CACHE) {
+      if (oldestKey === null || v.at < (EDGE_CHUNK_CACHE.get(oldestKey)?.at || 0)) oldestKey = k
+    }
+    if (oldestKey) EDGE_CHUNK_CACHE.delete(oldestKey)
+  }
+  return cars
 }
 
 function normalizeGenerated(car: CatalogItem): CatalogItem {
@@ -356,7 +394,19 @@ export function resolveCar(id?: string): CatalogItem | undefined {
   return getCarById(id)
 }
 
-export function resolveCarBySlug(slug: string): CatalogItem | undefined {
+export async function resolveCarBySlug(slug: string): Promise<CatalogItem | undefined> {
+  if (IS_EDGE) {
+    const all = getAllCars()
+    const hit = all.find((c) => c.slug === slug)
+    if (!hit || !hit.id) return undefined
+    try {
+      const chunk = await fetchFullChunkByIndex(hit._i ?? 0)
+      return chunk.find((c) => c.id === hit.id) ?? hit
+    } catch {
+      // Transient chunk fetch failure: degrade to the card (img[0]) projection.
+      return hit
+    }
+  }
   const all = getAllCars()
   return all.find((c) => carSlug(c) === slug)
 }

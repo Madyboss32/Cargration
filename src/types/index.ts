@@ -31,6 +31,8 @@ export interface CatalogItem {
   wheelSize?: string
   displacement?: string
   listedAt?: number
+  slug?: string
+  _i?: number
 }
 
 export interface BlogPost {
