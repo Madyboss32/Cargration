@@ -2,6 +2,7 @@ import { SITE } from '@/src/config/site'
 import { ensureLoaded, getAllCars } from '@/src/data/cars.server'
 import { fileCount } from '@/src/lib/sitemapPlan'
 
+export const runtime = 'edge'
 export const revalidate = 86400
 
 export async function GET(): Promise<Response> {

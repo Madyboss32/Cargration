@@ -23,6 +23,10 @@ export function generateStaticParams() {
   return locales.map((lang) => ({ lang }))
 }
 
+// Table-driven static generation: unknown langs/params are 404s, so Vercel emits
+// no fallback functions and next-on-pages treats every [lang] route as static.
+export const dynamicParams = false
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {

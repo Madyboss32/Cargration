@@ -12,6 +12,8 @@ export function generateStaticParams() {
   return Object.keys(countryGuides).map((slug) => ({ slug }))
 }
 
+export const dynamicParams = false
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = params?.lang || 'en'
   const slug = params?.slug || ''

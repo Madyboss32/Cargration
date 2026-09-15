@@ -13,6 +13,8 @@ export function generateStaticParams() {
   return getPosts('en').map((p) => ({ slug: p.slug }))
 }
 
+export const dynamicParams = false
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = params?.lang || 'en'
   const post = getPostBySlug(lang, params?.slug ?? '')

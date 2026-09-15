@@ -21,6 +21,8 @@ export function generateStaticParams() {
   return locales.flatMap((lang) => brands.map((brand) => ({ lang, brandSlug: brandSlug(brand) })))
 }
 
+export const dynamicParams = false
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const brand = resolveBrand(params.brandSlug)
   if (!brand) return {}
