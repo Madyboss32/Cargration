@@ -1,4 +1,10 @@
-import Redis from 'ioredis'
+import type Redis from 'ioredis'
+
+// Next.js inlines `process.env.NEXT_RUNTIME` at build time ('nodejs' | 'edge').
+// The Workers (edge) build must never bundle `ioredis` — it depends on Node core
+// modules (`net`, `dns`, `stream`, `crypto`) that don't exist on Cloudflare, and
+// there's no Redis store bound to a Worker anyway.
+const IS_EDGE = process.env.NEXT_RUNTIME === 'edge'
 
 const REDIS_URL = process.env.REDIS_URL || ''
 
@@ -10,14 +16,21 @@ const BREAK_THRESHOLD = 3
 const COOLDOWN_MS = 60_000
 
 function getClient(): Redis | null {
+  if (IS_EDGE) return null
   if (!REDIS_URL || Date.now() < disabledUntil) return null
   if (client) return client
   try {
-    client = new Redis(REDIS_URL, {
+    // Lazy, bundler-opaque require: webpack can't statically resolve
+    // `eval('require')('ioredis')`, so `ioredis` stays out of the edge bundle.
+    // This only ever runs under Node (local dev / scripts), never in a Worker.
+    // eslint-disable-next-line no-eval
+    const mod = eval('require')('ioredis') as { default?: typeof Redis }
+    const RedisImpl = mod.default || (mod as typeof Redis)
+    client = new RedisImpl(REDIS_URL, {
       connectTimeout: 3000,
       maxRetriesPerRequest: 1,
       retryStrategy: (times) => Math.min(times * 500, 5000),
-    })
+    }) as Redis
     client.on('error', () => {})
     return client
   } catch {
