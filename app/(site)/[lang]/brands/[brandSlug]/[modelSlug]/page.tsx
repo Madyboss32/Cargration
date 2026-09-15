@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { hreflangAlternates, baseOpenGraph } from '@/src/lib/seo'
 import { brandSlug, modelSlug, modelPageSeo, modelPageContent } from '@/src/lib/brandSeo'
 import { BRAND_MODEL_KEYWORDS } from '@/src/data/seoKeywords'
-import { getAllCars } from '@/src/data/cars.server'
+import { ensureLoaded, getAllCars } from '@/src/data/cars.server'
 import { getDictionary, createT } from '@/src/i18n'
 import { locales } from '@/src/i18n/config'
 import InventoryList from '@/src/views/InventoryList'
@@ -59,6 +59,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  await ensureLoaded()
   const brand = resolveBrand(params.brandSlug)
   if (!brand) return {}
   const model = resolveModel(brand, params.modelSlug)
@@ -73,7 +74,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function Page({ params, searchParams }: Props & { searchParams: Record<string, string | string[] | undefined> }) {
+export default async function Page({ params, searchParams }: Props & { searchParams: Record<string, string | string[] | undefined> }) {
+  await ensureLoaded()
   const brand = resolveBrand(params.brandSlug)
   if (!brand) notFound()
   const model = resolveModel(brand, params.modelSlug)

@@ -1,5 +1,5 @@
 import type { CatalogItem } from '../types'
-import { getAllCars, getBrands, getModels, getColors, slimForCard, carSlug } from '../data/cars.server'
+import { ensureLoaded, getAllCars, getBrands, getModels, getColors, slimForCard, carSlug } from '../data/cars.server'
 import { getDictionary, createT } from '../i18n'
 import { defaultLocale } from '../i18n/config'
 import SearchFilter from '../components/SearchFilter'
@@ -96,7 +96,10 @@ function locHref(href: string, lang: string): string {
   return clean
 }
 
-export default function InventoryList({ config, lang, searchParams }: InventoryListProps) {
+export default async function InventoryList({ config, lang, searchParams }: InventoryListProps) {
+  // On the edge runtime the catalog is fetched from R2 (build file isn't readable
+  // inside a Worker); must resolve before any sync getAllCars()/getBrands() below.
+  await ensureLoaded()
   const t = createT(getDictionary(lang))
 
   const raw: Record<string, string> = {}

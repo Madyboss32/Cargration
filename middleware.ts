@@ -12,14 +12,15 @@ export function middleware(request: NextRequest) {
   const first = pathname.split('/')[1]
 
   const isLocalePath = first !== undefined && (locales as readonly string[]).includes(first)
-  const isRootIndex = pathname === '/' || pathname === ''
 
-  if (isLocalePath || isRootIndex) {
+  if (isLocalePath) {
     return NextResponse.next()
   }
 
   const url = request.nextUrl.clone()
-  url.pathname = `/${defaultLocale}${pathname === '/' ? '' : pathname}`
+  // `/[lang]` is in dynamicParams=false; root and bare default-locale paths are
+  // hard redirects so Next never tries to render [lang] with an invalid segment.
+  url.pathname = pathname === '/' ? `/${defaultLocale}/` : `/${defaultLocale}${pathname}`
   // Preserve search params (filters etc.)
   return NextResponse.redirect(url, 308)
 }
